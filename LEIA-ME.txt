@@ -1,0 +1,61 @@
+# 📚 Biblioteca Escolar — Instruções de Instalação
+
+## O que está nesta pasta
+
+- `index.html` — o aplicativo principal
+- `manifest.json` — configurações do PWA
+- `sw.js` — service worker (permite uso offline)
+- `icons/` — ícones do app
+- `LEIA-ME.txt` — este arquivo
+
+---
+
+## Como instalar no Android (via servidor local no PC)
+
+### Passo 1 — Instale o Node.js no Windows
+Acesse https://nodejs.org e baixe a versão LTS. Instale normalmente.
+
+### Passo 2 — Abra o terminal na pasta do app
+- Clique com o botão direito dentro desta pasta
+- Selecione "Abrir no Terminal" (ou "Abrir janela do PowerShell aqui")
+
+### Passo 3 — Inicie o servidor
+Digite o comando abaixo e pressione Enter:
+
+  npx serve .
+
+Na primeira vez, ele pode perguntar se quer instalar o pacote "serve" — confirme com "y".
+
+Depois de rodar, você verá algo como:
+  Local: http://localhost:3000
+  Network: http://192.168.1.X:3000   ← esse é o endereço que importa!
+
+### Passo 4 — Conecte o celular na mesma rede Wi-Fi
+Certifique-se de que o celular está no mesmo Wi-Fi que o computador.
+
+### Passo 5 — Abra o app no celular
+No navegador do Android (Chrome), acesse o endereço "Network" que apareceu no terminal.
+Exemplo: http://192.168.1.105:3000
+
+### Passo 6 — Instale como app
+No Chrome do Android:
+1. Toque nos três pontinhos (⋮) no canto superior direito
+2. Toque em "Adicionar à tela inicial" ou "Instalar aplicativo"
+3. Confirme
+
+Pronto! O app aparecerá na tela inicial do Android com ícone próprio.
+
+---
+
+## Uso offline
+Após a primeira visita com internet, o app funciona offline graças ao service worker.
+
+## Backup dos dados
+Use os botões "Exportar" e "Importar" dentro do app para fazer backup no Google Drive
+e transferir dados entre dispositivos.
+
+---
+
+## Dúvidas?
+O servidor precisa estar rodando no PC para o celular acessar.
+Para encerrar o servidor, pressione Ctrl+C no terminal.

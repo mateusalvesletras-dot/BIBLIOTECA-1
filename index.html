@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#185FA5">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="Biblioteca">
+<title>Biblioteca Escolar</title>
+<link rel="manifest" href="manifest.json">
+<link rel="icon" href="icons/icon-192.png">
+<style>
+:root{
+  --bg:#f8f7f4;--surface:#ffffff;--surface2:#f1efe8;
+  --text:#1a1a18;--text2:#5f5e5a;--text3:#888780;
+  --border:#e0ddd5;--border2:#ccc9bf;
+  --blue:#185FA5;--blue-bg:#e6f1fb;--blue-text:#0C447C;
+  --green:#3B6D11;--green-bg:#eaf3de;--green-text:#27500A;
+  --amber:#854F0B;--amber-bg:#faeeda;--amber-text:#633806;
+  --red:#A32D2D;--red-bg:#fcebeb;--red-text:#791F1F;
+  --radius:10px;--radius-sm:7px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:15px;color:var(--text);background:var(--bg)}
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+
+/* HEADER */
+.header{background:var(--blue);color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+.header-left{display:flex;align-items:center;gap:10px}
+.header-icon{font-size:22px}
+.header-title{font-size:17px;font-weight:600;letter-spacing:-.3px}
+.header-sub{font-size:11px;opacity:.8}
+.header-actions{display:flex;gap:6px}
+.icon-btn{background:rgba(255,255,255,.18);border:none;color:#fff;border-radius:var(--radius-sm);padding:7px 10px;font-size:13px;cursor:pointer;display:flex;align-items:center;gap:4px;font-weight:500;white-space:nowrap}
+.icon-btn:active{opacity:.7}
+
+/* NAV */
+.nav{display:flex;background:var(--surface);border-top:1px solid var(--border);flex-shrink:0;order:10}
+.nav-btn{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:8px 4px 10px;border:none;background:transparent;color:var(--text3);cursor:pointer;font-size:10px;font-weight:500;transition:color .15s;min-width:0}
+.nav-btn .nav-icon{font-size:22px;line-height:1}
+.nav-btn.active{color:var(--blue)}
+.nav-btn.active .nav-bar{width:20px;height:3px;background:var(--blue);border-radius:2px;margin-top:2px}
+
+/* CONTENT */
+.content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;overscroll-behavior:contain}
+.section{display:none;padding:12px}
+.section.active{display:block}
+
+/* CARDS */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--text)}
+
+/* FORM */
+.field{margin-bottom:10px}
+.field label{display:block;font-size:12px;color:var(--text2);margin-bottom:4px;font-weight:500}
+.field input,.field select{width:100%;padding:10px 12px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:15px;color:var(--text);background:var(--surface);appearance:none;-webkit-appearance:none}
+.field input:focus,.field select:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(24,95,165,.12)}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+
+/* BUTTONS */
+.btn{padding:11px 16px;border-radius:var(--radius-sm);border:1px solid var(--border2);background:var(--surface);color:var(--text);font-size:14px;font-weight:600;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;gap:6px;width:100%;transition:all .15s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:var(--blue);color:#fff;border-color:var(--blue)}
+.btn-primary:active{background:var(--blue-text)}
+.btn-success{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-sm{padding:6px 12px;font-size:12px;width:auto}
+.btn-danger{background:var(--red-bg);color:var(--red);border-color:transparent}
+
+/* SEARCH */
+.search-wrap{position:relative;margin-bottom:10px}
+.search-wrap input{width:100%;padding:10px 12px 10px 36px;border:1px solid var(--border2);border-radius:var(--radius-sm);font-size:14px;color:var(--text);background:var(--surface)}
+.search-wrap input:focus{outline:none;border-color:var(--blue)}
+.search-icon{position:absolute;left:11px;top:50%;transform:translateY(-50%);font-size:16px;color:var(--text3)}
+
+/* LIST ITEMS */
+.list-item{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px}
+.list-item-body{flex:1;min-width:0}
+.list-item-title{font-weight:600;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.list-item-sub{font-size:12px;color:var(--text2);margin-top:2px}
+.list-item-actions{display:flex;gap:6px;margin-top:8px}
+.list-avatar{width:42px;height:42px;border-radius:var(--radius-sm);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0}
+.avatar-book{background:var(--blue-bg);color:var(--blue)}
+.avatar-user{background:var(--green-bg);color:var(--green)}
+.avatar-loan{background:var(--amber-bg);color:var(--amber)}
+
+/* BADGES */
+.badge{display:inline-block;padding:3px 9px;border-radius:20px;font-size:11px;font-weight:600}
+.badge-green{background:var(--green-bg);color:var(--green-text)}
+.badge-blue{background:var(--blue-bg);color:var(--blue-text)}
+.badge-amber{background:var(--amber-bg);color:var(--amber-text)}
+.badge-red{background:var(--red-bg);color:var(--red-text)}
+
+/* STATS */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.stat{background:var(--surface);border:1px solid var(--border);border-radius:var(--radius);padding:14px 12px;text-align:center}
+.stat-icon{font-size:24px;margin-bottom:4px}
+.stat-num{font-size:26px;font-weight:700;line-height:1}
+.stat-lbl{font-size:11px;color:var(--text2);margin-top:4px}
+
+/* EMPTY */
+.empty{text-align:center;padding:2.5rem 1rem;color:var(--text3)}
+.empty-icon{font-size:40px;display:block;margin-bottom:8px}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%) translateY(20px);background:#1a1a18;color:#fff;padding:10px 20px;border-radius:30px;font-size:13px;font-weight:500;z-index:999;opacity:0;transition:all .25s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* MODAL */
+.modal-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;align-items:flex-end;justify-content:center}
+.modal-bg.open{display:flex}
+.modal{background:var(--surface);border-radius:var(--radius) var(--radius) 0 0;padding:20px 16px 30px;width:100%;max-height:85vh;overflow-y:auto}
+.modal-handle{width:40px;height:4px;background:var(--border2);border-radius:2px;margin:0 auto 16px}
+.modal-title{font-size:16px;font-weight:700;margin-bottom:16px}
+
+/* OVERDUE */
+.overdue-item{border-left:3px solid var(--red)}
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <span class="header-icon">📚</span>
+      <div>
+        <div class="header-title">Biblioteca Escolar</div>
+        <div class="header-sub" id="header-sub">carregando...</div>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" onclick="exportarDados()">⬇ Exportar</button>
+      <button class="icon-btn" onclick="document.getElementById('importFile').click()">⬆ Importar</button>
+      <input type="file" id="importFile" accept=".json" style="display:none" onchange="importarDados(event)">
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- PAINEL -->
+    <div class="section active" id="sec-painel">
+      <div class="stats-grid" id="stats-grid"></div>
+      <div class="card">
+        <div class="card-title">⚠️ Empréstimos atrasados</div>
+        <div id="dash-atrasados"></div>
+      </div>
+      <div class="card">
+        <div class="card-title">📋 Empréstimos em aberto</div>
+        <div id="dash-abertos"></div>
+      </div>
+    </div>
+
+    <!-- LIVROS -->
+    <div class="section" id="sec-livros">
+      <button class="btn btn-primary" style="margin-bottom:12px" onclick="abrirModalLivro()">+ Cadastrar livro</button>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input placeholder="Buscar livro..." oninput="renderLivros(this.value)">
+      </div>
+      <div id="lista-livros"></div>
+    </div>
+
+    <!-- ALUNOS -->
+    <div class="section" id="sec-alunos">
+      <button class="btn btn-primary" style="margin-bottom:12px" onclick="abrirModalAluno()">+ Cadastrar aluno</button>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input placeholder="Buscar aluno..." oninput="renderAlunos(this.value)">
+      </div>
+      <div id="lista-alunos"></div>
+    </div>
+
+    <!-- EMPRÉSTIMOS -->
+    <div class="section" id="sec-emprestimos">
+      <button class="btn btn-primary" style="margin-bottom:12px" onclick="abrirModalEmprestimo()">+ Novo empréstimo</button>
+      <div class="search-wrap">
+        <span class="search-icon">🔍</span>
+        <input placeholder="Buscar aluno ou livro..." oninput="renderEmprestimos(this.value)">
+      </div>
+      <div id="lista-emprestimos"></div>
+    </div>
+
+    <!-- RELATÓRIOS -->
+    <div class="section" id="sec-relatorios">
+      <div id="relatorios-content"></div>
+    </div>
+
+  </div>
+
+  <!-- BOTTOM NAV -->
+  <nav class="nav">
+    <button class="nav-btn active" onclick="trocarAba('painel',this)">
+      <span class="nav-icon">🏠</span><span>Painel</span><div class="nav-bar"></div>
+    </button>
+    <button class="nav-btn" onclick="trocarAba('livros',this)">
+      <span class="nav-icon">📖</span><span>Livros</span>
+    </button>
+    <button class="nav-btn" onclick="trocarAba('alunos',this)">
+      <span class="nav-icon">👥</span><span>Alunos</span>
+    </button>
+    <button class="nav-btn" onclick="trocarAba('emprestimos',this)">
+      <span class="nav-icon">🔄</span><span>Empréstimos</span>
+    </button>
+    <button class="nav-btn" onclick="trocarAba('relatorios',this)">
+      <span class="nav-icon">📊</span><span>Relatórios</span>
+    </button>
+  </nav>
+</div>
+
+<!-- MODAL LIVRO -->
+<div class="modal-bg" id="modal-livro">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📖 Cadastrar livro</div>
+    <div class="field"><label>Título *</label><input id="l-titulo" placeholder="Ex: Dom Casmurro"></div>
+    <div class="field"><label>Autor</label><input id="l-autor" placeholder="Ex: Machado de Assis"></div>
+    <div class="row2">
+      <div class="field"><label>Gênero</label><select id="l-genero">
+        <option>Romance</option><option>Ficção científica</option><option>Fantasia</option>
+        <option>Aventura</option><option>Poesia</option><option>Didático</option>
+        <option>História</option><option>Ciências</option><option>Outro</option>
+      </select></div>
+      <div class="field"><label>Ano</label><input id="l-ano" placeholder="2020" type="number"></div>
+    </div>
+    <div class="row2">
+      <div class="field"><label>Exemplares</label><input id="l-qtd" type="number" value="1" min="1"></div>
+      <div class="field"><label>ISBN</label><input id="l-isbn" placeholder="opcional"></div>
+    </div>
+    <button class="btn btn-primary" onclick="cadastrarLivro()">Cadastrar</button>
+    <button class="btn" style="margin-top:8px" onclick="fecharModal('modal-livro')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL ALUNO -->
+<div class="modal-bg" id="modal-aluno">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">👤 Cadastrar aluno</div>
+    <div class="field"><label>Nome completo *</label><input id="a-nome" placeholder="Ex: Ana Silva"></div>
+    <div class="row2">
+      <div class="field"><label>Turma</label><input id="a-turma" placeholder="Ex: 8ºA"></div>
+      <div class="field"><label>Matrícula</label><input id="a-matricula" placeholder="2024001"></div>
+    </div>
+    <div class="field"><label>Telefone</label><input id="a-tel" placeholder="(83) 99999-9999" type="tel"></div>
+    <button class="btn btn-primary" onclick="cadastrarAluno()">Cadastrar</button>
+    <button class="btn" style="margin-top:8px" onclick="fecharModal('modal-aluno')">Cancelar</button>
+  </div>
+</div>
+
+<!-- MODAL EMPRÉSTIMO -->
+<div class="modal-bg" id="modal-emprestimo">
+  <div class="modal">
+    <div class="modal-handle"></div>
+    <div class="modal-title">🔄 Novo empréstimo</div>
+    <div class="field"><label>Aluno *</label><select id="e-aluno" style="width:100%"><option value="">Selecionar...</option></select></div>
+    <div class="field"><label>Livro *</label><select id="e-livro" style="width:100%"><option value="">Selecionar...</option></select></div>
+    <div class="field"><label>Data de devolução *</label><input id="e-data" type="date"></div>
+    <button class="btn btn-primary" onclick="registrarEmprestimo()">Registrar</button>
+    <button class="btn" style="margin-top:8px" onclick="fecharModal('modal-emprestimo')">Cancelar</button>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+let db = {livros:[], alunos:[], emprestimos:[]};
+
+function salvar(){try{localStorage.setItem('bib_db',JSON.stringify(db))}catch(e){}}
+function carregar(){try{const d=localStorage.getItem('bib_db');if(d)db=JSON.parse(d)}catch(e){}}
+function uid(){return Date.now().toString(36)+Math.random().toString(36).slice(2)}
+function hoje(){return new Date().toISOString().slice(0,10)}
+
+function toast(msg,tipo='ok'){
+  const t=document.getElementById('toast');
+  t.textContent=msg;
+  t.style.background=tipo==='ok'?'#1a1a18':tipo==='err'?'#A32D2D':'#854F0B';
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2500);
+}
+
+function trocarAba(aba,btn){
+  document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
+  document.querySelectorAll('.nav-btn').forEach(b=>{b.classList.remove('active');b.querySelector('.nav-bar')&&b.querySelector('.nav-bar').remove()});
+  document.getElementById('sec-'+aba).classList.add('active');
+  btn.classList.add('active');
+  const bar=document.createElement('div');bar.className='nav-bar';btn.appendChild(bar);
+  if(aba==='painel')renderPainel();
+  if(aba==='livros')renderLivros();
+  if(aba==='alunos')renderAlunos();
+  if(aba==='emprestimos')renderEmprestimos();
+  if(aba==='relatorios')renderRelatorios();
+}
+
+function abrirModalLivro(){document.getElementById('modal-livro').classList.add('open')}
+function abrirModalAluno(){document.getElementById('modal-aluno').classList.add('open')}
+function abrirModalEmprestimo(){popularSelects();document.getElementById('modal-emprestimo').classList.add('open')}
+function fecharModal(id){document.getElementById(id).classList.remove('open')}
+
+document.querySelectorAll('.modal-bg').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)m.classList.remove('open')}));
+
+function disponiveis(lid){
+  const l=db.livros.find(x=>x.id===lid);if(!l)return 0;
+  return l.qtd-db.emprestimos.filter(e=>e.livroId===lid&&e.status==='ativo').length;
+}
+
+function cadastrarLivro(){
+  const t=document.getElementById('l-titulo').value.trim();
+  if(!t){toast('Informe o título','err');return;}
+  db.livros.push({id:uid(),titulo:t,autor:document.getElementById('l-autor').value.trim(),
+    genero:document.getElementById('l-genero').value,
+    ano:document.getElementById('l-ano').value,
+    qtd:parseInt(document.getElementById('l-qtd').value)||1,
+    isbn:document.getElementById('l-isbn').value.trim()});
+  salvar();fecharModal('modal-livro');
+  ['l-titulo','l-autor','l-ano','l-isbn'].forEach(i=>document.getElementById(i).value='');
+  document.getElementById('l-qtd').value='1';
+  toast('Livro cadastrado!');renderLivros();atualizarHeader();
+}
+
+function cadastrarAluno(){
+  const n=document.getElementById('a-nome').value.trim();
+  if(!n){toast('Informe o nome','err');return;}
+  db.alunos.push({id:uid(),nome:n,turma:document.getElementById('a-turma').value.trim(),
+    matricula:document.getElementById('a-matricula').value.trim(),
+    tel:document.getElementById('a-tel').value.trim()});
+  salvar();fecharModal('modal-aluno');
+  ['a-nome','a-turma','a-matricula','a-tel'].forEach(i=>document.getElementById(i).value='');
+  toast('Aluno cadastrado!');renderAlunos();atualizarHeader();
+}
+
+function popularSelects(){
+  const sa=document.getElementById('e-aluno'),sl=document.getElementById('e-livro');
+  sa.innerHTML='<option value="">Selecionar aluno...</option>';
+  db.alunos.slice().sort((a,b)=>a.nome.localeCompare(b.nome))
+    .forEach(a=>sa.innerHTML+=`<option value="${a.id}">${a.nome}${a.turma?' — '+a.turma:''}</option>`);
+  sl.innerHTML='<option value="">Selecionar livro...</option>';
+  db.livros.slice().sort((a,b)=>a.titulo.localeCompare(b.titulo)).forEach(l=>{
+    const d=disponiveis(l.id);
+    if(d>0)sl.innerHTML+=`<option value="${l.id}">${l.titulo} (${d} disp.)</option>`;
+  });
+  const dt=new Date();dt.setDate(dt.getDate()+14);
+  document.getElementById('e-data').value=dt.toISOString().slice(0,10);
+}
+
+function registrarEmprestimo(){
+  const aId=document.getElementById('e-aluno').value,lId=document.getElementById('e-livro').value,data=document.getElementById('e-data').value;
+  if(!aId||!lId||!data){toast('Preencha todos os campos','err');return;}
+  if(disponiveis(lId)<1){toast('Sem exemplares disponíveis','err');return;}
+  if(db.emprestimos.find(e=>e.alunoId===aId&&e.livroId===lId&&e.status==='ativo')){toast('Aluno já tem este livro','err');return;}
+  db.emprestimos.push({id:uid(),alunoId:aId,livroId:lId,dataEmprestimo:hoje(),dataDevolucao:data,status:'ativo'});
+  salvar();fecharModal('modal-emprestimo');toast('Empréstimo registrado!');renderEmprestimos();
+}
+
+function devolver(eId){
+  const e=db.emprestimos.find(x=>x.id===eId);
+  if(e){e.status='devolvido';e.dataDevolvido=hoje();}
+  salvar();toast('Devolvido com sucesso!');renderEmprestimos();renderPainel();
+}
+
+function excluirLivro(lid){
+  if(db.emprestimos.some(e=>e.livroId===lid&&e.status==='ativo')){toast('Livro com empréstimo ativo','err');return;}
+  if(!confirm('Remover este livro?'))return;
+  db.livros=db.livros.filter(l=>l.id!==lid);salvar();toast('Livro removido');renderLivros();atualizarHeader();
+}
+
+function excluirAluno(aid){
+  if(db.emprestimos.some(e=>e.alunoId===aid&&e.status==='ativo')){toast('Aluno com empréstimo ativo','err');return;}
+  if(!confirm('Remover este aluno?'))return;
+  db.alunos=db.alunos.filter(a=>a.id!==aid);salvar();toast('Aluno removido');renderAlunos();atualizarHeader();
+}
+
+function atualizarHeader(){
+  document.getElementById('header-sub').textContent=`${db.livros.length} livros · ${db.alunos.length} alunos`;
+}
+
+function renderPainel(){
+  const hj=hoje();
+  const ativos=db.emprestimos.filter(e=>e.status==='ativo');
+  const atrasados=ativos.filter(e=>e.dataDevolucao<hj);
+  document.getElementById('stats-grid').innerHTML=
+    `<div class="stat"><div class="stat-icon">📚</div><div class="stat-num" style="color:var(--blue)">${db.livros.length}</div><div class="stat-lbl">Livros</div></div>`+
+    `<div class="stat"><div class="stat-icon">👥</div><div class="stat-num" style="color:var(--green)">${db.alunos.length}</div><div class="stat-lbl">Alunos</div></div>`+
+    `<div class="stat"><div class="stat-icon">🔄</div><div class="stat-num" style="color:var(--amber)">${ativos.length}</div><div class="stat-lbl">Em empréstimo</div></div>`+
+    `<div class="stat"><div class="stat-icon">⚠️</div><div class="stat-num" style="color:var(--red)">${atrasados.length}</div><div class="stat-lbl">Atrasados</div></div>`;
+
+  const elAt=document.getElementById('dash-atrasados');
+  elAt.innerHTML=atrasados.length?atrasados.map(e=>loanItem(e,true)).join(''):
+    '<div class="empty"><span class="empty-icon">✅</span>Nenhum atraso</div>';
+
+  const elAb=document.getElementById('dash-abertos');
+  const semAtraso=ativos.filter(e=>e.dataDevolucao>=hj);
+  elAb.innerHTML=semAtraso.length?semAtraso.slice(0,8).map(e=>loanItem(e,false)).join(''):
+    '<div class="empty"><span class="empty-icon">📋</span>Nenhum empréstimo ativo</div>';
+}
+
+function loanItem(e,overdue){
+  const a=db.alunos.find(x=>x.id===e.alunoId);
+  const l=db.livros.find(x=>x.id===e.livroId);
+  return`<div class="list-item ${overdue?'overdue-item':''}">
+    <div class="list-avatar avatar-loan">🔄</div>
+    <div class="list-item-body">
+      <div class="list-item-title">${l?l.titulo:'?'}</div>
+      <div class="list-item-sub">${a?a.nome:'?'}${a&&a.turma?' · '+a.turma:''}</div>
+      <div class="list-item-sub" style="margin-top:2px">Devolução: <strong>${e.dataDevolucao}</strong> ${overdue?'<span class="badge badge-red">Atrasado</span>':''}</div>
+      <div class="list-item-actions">
+        <button class="btn btn-success btn-sm" onclick="devolver('${e.id}')">✓ Devolver</button>
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderLivros(q=''){
+  const el=document.getElementById('lista-livros');
+  const lista=db.livros.filter(l=>!q||l.titulo.toLowerCase().includes(q.toLowerCase())||l.autor.toLowerCase().includes(q.toLowerCase()));
+  if(!lista.length){el.innerHTML=`<div class="empty"><span class="empty-icon">📚</span>${q?'Nenhum resultado':'Nenhum livro cadastrado'}</div>`;return;}
+  el.innerHTML=lista.map(l=>{
+    const d=disponiveis(l.id);
+    return`<div class="list-item">
+      <div class="list-avatar avatar-book">📖</div>
+      <div class="list-item-body">
+        <div class="list-item-title">${l.titulo}</div>
+        <div class="list-item-sub">${l.autor||'Autor desconhecido'} · ${l.genero}${l.ano?' · '+l.ano:''}</div>
+        <div class="list-item-sub" style="margin-top:4px">
+          <span class="badge ${d>0?'badge-green':'badge-red'}">${d} disponível${d!==1?'is':''}</span>
+          <span style="color:var(--text3);font-size:11px;margin-left:6px">${l.qtd} exemplar${l.qtd!==1?'es':''} no total</span>
+        </div>
+        <div class="list-item-actions">
+          <button class="btn btn-danger btn-sm" onclick="excluirLivro('${l.id}')">🗑 Remover</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderAlunos(q=''){
+  const el=document.getElementById('lista-alunos');
+  const lista=db.alunos.filter(a=>!q||a.nome.toLowerCase().includes(q.toLowerCase())||a.turma.toLowerCase().includes(q.toLowerCase()));
+  if(!lista.length){el.innerHTML=`<div class="empty"><span class="empty-icon">👥</span>${q?'Nenhum resultado':'Nenhum aluno cadastrado'}</div>`;return;}
+  el.innerHTML=lista.map(a=>{
+    const ativos=db.emprestimos.filter(e=>e.alunoId===a.id&&e.status==='ativo').length;
+    return`<div class="list-item">
+      <div class="list-avatar avatar-user">👤</div>
+      <div class="list-item-body">
+        <div class="list-item-title">${a.nome}</div>
+        <div class="list-item-sub">${a.turma||'Sem turma'}${a.matricula?' · Mat: '+a.matricula:''}${a.tel?' · '+a.tel:''}</div>
+        <div class="list-item-sub" style="margin-top:4px">
+          <span class="badge ${ativos>0?'badge-amber':'badge-green'}">${ativos} empréstimo${ativos!==1?'s':''} ativo${ativos!==1?'s':''}</span>
+        </div>
+        <div class="list-item-actions">
+          <button class="btn btn-danger btn-sm" onclick="excluirAluno('${a.id}')">🗑 Remover</button>
+        </div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function renderEmprestimos(q=''){
+  const el=document.getElementById('lista-emprestimos');
+  const hj=hoje();
+  let lista=db.emprestimos.filter(e=>e.status==='ativo');
+  if(q){lista=lista.filter(e=>{
+    const a=db.alunos.find(x=>x.id===e.alunoId);
+    const l=db.livros.find(x=>x.id===e.livroId);
+    return(a&&a.nome.toLowerCase().includes(q.toLowerCase()))||(l&&l.titulo.toLowerCase().includes(q.toLowerCase()));
+  });}
+  lista.sort((a,b)=>a.dataDevolucao>b.dataDevolucao?1:-1);
+  if(!lista.length){el.innerHTML='<div class="empty"><span class="empty-icon">✅</span>Nenhum empréstimo ativo</div>';return;}
+  el.innerHTML=lista.map(e=>loanItem(e,e.dataDevolucao<hj)).join('');
+}
+
+function renderRelatorios(){
+  const hj=hoje();
+  const ativos=db.emprestimos.filter(e=>e.status==='ativo');
+  const atrasados=ativos.filter(e=>e.dataDevolucao<hj);
+  const generos={};
+  db.livros.forEach(l=>{generos[l.genero]=(generos[l.genero]||0)+1;});
+  const livroEmp={};db.emprestimos.forEach(e=>{livroEmp[e.livroId]=(livroEmp[e.livroId]||0)+1;});
+  const topLivros=Object.entries(livroEmp).sort((a,b)=>b[1]-a[1]).slice(0,5);
+  const alunoEmp={};db.emprestimos.forEach(e=>{alunoEmp[e.alunoId]=(alunoEmp[e.alunoId]||0)+1;});
+  const topAlunos=Object.entries(alunoEmp).sort((a,b)=>b[1]-a[1]).slice(0,5);
+
+  document.getElementById('relatorios-content').innerHTML=`
+  <div class="card">
+    <div class="card-title">⚠️ Atrasados (${atrasados.length})</div>
+    ${atrasados.length?atrasados.map(e=>{
+      const a=db.alunos.find(x=>x.id===e.alunoId),l=db.livros.find(x=>x.id===e.livroId);
+      return`<div style="padding:8px 0;border-bottom:1px solid var(--border)">
+        <div style="font-weight:600;font-size:13px">${a?a.nome:'?'} — ${a?a.turma:'?'}</div>
+        <div style="font-size:12px;color:var(--text2)">${l?l.titulo:'?'}</div>
+        <div style="font-size:11px;color:var(--red);margin-top:2px">Venceu em ${e.dataDevolucao}</div>
+      </div>`;
+    }).join(''):'<div class="empty" style="padding:1rem 0">Nenhum atraso 🎉</div>'}
+  </div>
+  <div class="card">
+    <div class="card-title">📖 Livros mais emprestados</div>
+    ${topLivros.length?topLivros.map(([lid,n])=>{const l=db.livros.find(x=>x.id===lid);return`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:13px;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">${l?l.titulo:'?'}</span>
+      <span class="badge badge-blue" style="margin-left:8px;flex-shrink:0">${n}x</span>
+    </div>`}).join(''):'<div class="empty" style="padding:1rem 0">Sem dados ainda</div>'}
+  </div>
+  <div class="card">
+    <div class="card-title">👥 Alunos mais ativos</div>
+    ${topAlunos.length?topAlunos.map(([aid,n])=>{const a=db.alunos.find(x=>x.id===aid);return`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:13px">${a?a.nome:'?'}${a&&a.turma?' <span style="color:var(--text3)">'+a.turma+'</span>':''}</span>
+      <span class="badge badge-amber" style="margin-left:8px">${n} empr.</span>
+    </div>`}).join(''):'<div class="empty" style="padding:1rem 0">Sem dados ainda</div>'}
+  </div>
+  <div class="card">
+    <div class="card-title">📚 Acervo por gênero</div>
+    ${Object.entries(generos).sort((a,b)=>b[1]-a[1]).map(([g,n])=>`
+    <div style="display:flex;justify-content:space-between;align-items:center;padding:7px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:13px">${g}</span><span class="badge badge-green">${n}</span>
+    </div>`).join('')||'<div class="empty" style="padding:1rem 0">Sem dados ainda</div>'}
+  </div>`;
+}
+
+function exportarDados(){
+  const blob=new Blob([JSON.stringify(db,null,2)],{type:'application/json'});
+  const url=URL.createObjectURL(blob);
+  const a=document.createElement('a');a.href=url;
+  a.download=`biblioteca_${hoje()}.json`;a.click();URL.revokeObjectURL(url);
+  toast('Exportado! Salve o arquivo no Drive.');
+}
+
+function importarDados(ev){
+  const file=ev.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=e=>{
+    try{
+      const dados=JSON.parse(e.target.result);
+      if(!dados.livros||!dados.alunos||!dados.emprestimos)throw new Error();
+      db=dados;salvar();atualizarHeader();renderPainel();
+      toast('Dados importados!');
+      document.getElementById('importFile').value='';
+    }catch{toast('Arquivo inválido','err');}
+  };r.readAsText(file);
+}
+
+if('serviceWorker' in navigator){
+  navigator.serviceWorker.register('sw.js').catch(()=>{});
+}
+
+carregar();atualizarHeader();renderPainel();
+</script>
+</body>
+</html>
